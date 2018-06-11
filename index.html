@@ -12,12 +12,23 @@
             data: function() {
                 return {
                     isEdit: false,
-                    nameTask: name
+                    nameTask: this.name
                 }
             },
+            methods: {
+                    toEdit: function() {
+                        if (this.isEdit) {
+                            this.$emit('change-name', this.nameTask);
+                            this.isEdit = false;
+                        } else {
+                            this.isEdit=true;
+                        }
+                    }
+            },
             template: `<div style="border: green solid 1px; text-align: center; margin: 3px"> 
-                          {{name}} 
-                          <button>Edit</button>
+                          <input v-model="nameTask" v-show="isEdit"/> 
+                          <b v-show="!isEdit"> {{nameTask}} </b> 
+                          <button v-on:click="toEdit">{{isEdit ? "Ok" : "Edit"}}</button>
                           <button v-on:click="$emit('del')">Delete</button>
                           <button v-if="status!=2" v-on:click="$emit('set-status')">SetStatus</button>
                         </div>`
@@ -41,7 +52,8 @@
                     :status="task.status" 
                     v-bind:key="task.id"
                     v-on:del="delTask(task.id)"
-                    v-on:set-status="setStatus(task.id)">
+                    v-on:set-status="setStatus(task.id)"
+                    v-on:change-name="changeName(task.id, $event)">
                 </elem>
             </span>
             <span style='width: 33%; display: inline-block; vertical-align: top;'>
@@ -52,7 +64,8 @@
                     :status="task.status"  
                     v-bind:key="task.id"
                     v-on:del="delTask(task.id)"
-                    v-on:set-status="setStatus(task.id)">
+                    v-on:set-status="setStatus(task.id)"
+                    v-on:change-name="changeName(task.id, $event)">
                 </elem>
             </span>
             <span style='width: 33%; display: inline-block; vertical-align: top;'>
@@ -94,7 +107,11 @@
                     },
                     setStatus: function(i) {
                         todo.tasks.find((item) => item.id == i).status++;
-                    }
+                    },
+                    changeName: function(i, name) {
+                        console.log('myconsole', name, i)
+                        todo.tasks.find((item) => item.id == i).name =name;
+                    },
                 },
                 computed: {
                     completedTasks:function() {
