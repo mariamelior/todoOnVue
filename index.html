@@ -1,0 +1,113 @@
+<html>
+    <head>
+        <title>Vue</title>
+        <script src="https://unpkg.com/vue"></script>
+                
+
+    </head>
+    <body>
+        <script>
+            Vue.component('elem',{
+            props: ['name', 'status'],
+            data: function() {
+                return {
+                    isEdit: false,
+                    nameTask: name
+                }
+            },
+            template: `<div style="border: green solid 1px; text-align: center; margin: 3px"> 
+                          {{name}} 
+                          <button>Edit</button>
+                          <button v-on:click="$emit('del')">Delete</button>
+                          <button v-if="status!=2" v-on:click="$emit('set-status')">SetStatus</button>
+                        </div>`
+            })
+        </script>
+
+        <div id="todo">
+            <div style="padding-right: 10px">
+                <button v-on:click="isAdd=true">Создать новую задачу</button>
+            </div>         
+            <div v-show="isAdd">
+                Введите название новой задачи
+                <input v-model="newName"/>
+                <button v-on:click="addNew">Ok</button>
+             </div>
+            <span style='width: 33%; display: inline-block; vertical-align: top;'>
+                <h2>В ожидании</h2>
+                <elem 
+                    v-for="(task,index) in waitedTasks"
+                    v-bind:name="task.name"
+                    :status="task.status" 
+                    v-bind:key="task.id"
+                    v-on:del="delTask(task.id)"
+                    v-on:set-status="setStatus(task.id)">
+                </elem>
+            </span>
+            <span style='width: 33%; display: inline-block; vertical-align: top;'>
+                <h2>В процессе</h2>
+                <elem 
+                    v-for="(task,index) in inprogressTasks" 
+                    v-bind:name="task.name"
+                    :status="task.status"  
+                    v-bind:key="task.id"
+                    v-on:del="delTask(task.id)"
+                    v-on:set-status="setStatus(task.id)">
+                </elem>
+            </span>
+            <span style='width: 33%; display: inline-block; vertical-align: top;'>
+                <h2>Готово</h2>
+                <elem 
+                    v-for="(task,index) in completedTasks" 
+                    v-bind:name="task.name" 
+                    :status="task.status" 
+                    v-bind:key="task.id"
+                    v-on:del="delTask(task.id)"></elem> 
+            </span>     
+        </div>
+
+        <script>
+            var todo = new Vue({
+                el: '#todo',
+                data: {
+                tasks: [
+                    {name: "e", status: 0, id: 0},
+                    {name: "r", status: 1, id: 1},
+                    {name: "t", status: 2, id: 2},
+                    {name: "y", status: 3, id: 3},
+                    {name: "n", status: 1, id: 4}
+                ],
+                newName: '',
+                isAdd: false
+                },
+                methods: {
+                    addNew: function() {
+                        if (this.newName) {
+                            todo.tasks.push({name: this.newName, status: 0, id: todo.tasks.length});
+                            todo.newName= '';
+                        }
+                        todo.isAdd=false;
+
+                    },
+                    delTask: function(i) {
+                        todo.tasks.find((item) => item.id == i).status=3;
+                    },
+                    setStatus: function(i) {
+                        todo.tasks.find((item) => item.id == i).status++;
+                    }
+                },
+                computed: {
+                    completedTasks:function() {
+                        return this.tasks.filter((item) => item.status == 2)
+                    },
+                    inprogressTasks: function() {
+                        return this.tasks.filter((item) => item.status == 1)
+                    },
+                    waitedTasks: function() {
+                        return this.tasks.filter((item) => item.status == 0)
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
