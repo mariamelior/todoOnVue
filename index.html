@@ -1,9 +1,10 @@
 <html>
     <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="./style.css"/>
         <title>Vue</title>
         <script src="https://unpkg.com/vue"></script>
-                
-
+            
     </head>
     <body>
         <script>
@@ -25,7 +26,7 @@
                         }
                     }
             },
-            template: `<div style="border: green solid 1px; text-align: center; margin: 3px"> 
+            template: `<div class="task" v-bind:class="{ active: status == 1, wait: status == 0, done: status == 2}"> 
                           <input v-model="nameTask" v-show="isEdit"/> 
                           <b v-show="!isEdit"> {{nameTask}} </b> 
                           <button v-on:click="toEdit">{{isEdit ? "Ok" : "Edit"}}</button>
@@ -39,12 +40,11 @@
             <div style="padding-right: 10px">
                 <button v-on:click="isAdd=true">Создать новую задачу</button>
             </div>         
-            <div v-show="isAdd">
-                Введите название новой задачи
-                <input v-model="newName"/>
-                <button v-on:click="addNew">Ok</button>
+            <div class="new-task" v-bind:class="{'new-task_open': isAdd}">                
+                <input v-model="newName" placeholder="Введите название новой задачи"/>
+                <button v-on:click="addNew">{{newName.length ? 'Ok' : 'Cancel'}}</button>
              </div>
-            <span style='width: 33%; display: inline-block; vertical-align: top;'>
+            <span class="task-block task-block_wait">
                 <h2>В ожидании</h2>
                 <elem 
                     v-for="(task,index) in waitedTasks"
@@ -56,7 +56,7 @@
                     v-on:change-name="changeName(task.id, $event)">
                 </elem>
             </span>
-            <span style='width: 33%; display: inline-block; vertical-align: top;'>
+            <span class="task-block task-block_active">
                 <h2>В процессе</h2>
                 <elem 
                     v-for="(task,index) in inprogressTasks" 
@@ -68,7 +68,7 @@
                     v-on:change-name="changeName(task.id, $event)">
                 </elem>
             </span>
-            <span style='width: 33%; display: inline-block; vertical-align: top;'>
+            <span class="task-block task-block_done">
                 <h2>Готово</h2>
                 <elem 
                     v-for="(task,index) in completedTasks" 
